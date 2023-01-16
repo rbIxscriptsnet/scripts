@@ -1,0 +1,15 @@
+if _G.AutoCollect then _G.AutoCollect = false
+else _G.AutoCollect = true
+end
+while _G.AutoCollect do
+	for i, v in pairs(game:GetService("Workspace").orbFolder:GetChildren()) do
+		if v:FindFirstChildOfClass("Model") then
+			for i, v in pairs(v:GetChildren()) do
+				if v.Name ~= "Gem" and v:FindFirstChild("outerOrb") then firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v.outerOrb, 0)
+				elseif v.Name == "Gem" and v:FindFirstChild("outerGem") then firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v.outerGem, 0)
+				end
+			end
+		end
+	end
+	wait()
+end
