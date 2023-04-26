@@ -1,0 +1,42 @@
+getgenv().Roll = false
+getgenv().Sell = false
+
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("Ice Cream Clicker | RBLXSCRIPTS.NET", "DarkTheme")
+local Tab = Window:NewTab("Main")
+
+--Roll
+local Section = Tab:NewSection("Licking")
+
+Section:NewToggle("Auto Lick", "Licks for you", function(state)
+    Roll = state
+        spawn(function()
+    while Roll do
+        task.wait()
+        local args = {
+            [1] = "Roll2"
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):FireServer(unpack(args))
+        
+        end
+    end)
+end)
+
+--Sell
+local Section = Tab:NewSection("Selling")
+
+Section:NewToggle("Auto Sell", "Sells for you", function(state)
+    Sell = state
+        spawn(function()
+    while Sell do
+        task.wait()
+        local args = {
+            [1] = "Sell2",
+            [2] = workspace:WaitForChild("Sells"):WaitForChild("Lobby")
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):FireServer(unpack(args))
+        end
+    end)
+end)
