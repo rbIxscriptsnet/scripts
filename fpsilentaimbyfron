@@ -1,0 +1,70 @@
+FOV = FOV or 180;
+HIT_PART = HIT_PART or "Head";
+
+-- variables
+local camera = workspace.CurrentCamera;
+local players = workspace:WaitForChild("Players");
+local localPlayer = game:GetService("Players").LocalPlayer;
+
+-- functions
+local function getWeapon()
+    for _, child in ipairs(camera:GetChildren()) do
+        if child.Name ~= "Left Arm" and child.Name ~= "Right Arm" then
+            return child;
+        end
+    end
+end
+
+local function getEnemyTeam()
+    for _, team in ipairs(players:GetChildren()) do
+        if team.Name ~= localPlayer.TeamColor.Name then
+            return team;
+        end
+    end
+end
+
+local function getClosest()
+    local _hitPart;
+    local _angle = math.rad(FOV);
+    for _, character in ipairs(getEnemyTeam():GetChildren()) do
+        local hitPart = character:FindFirstChild(HIT_PART);
+        if not hitPart then
+            continue;
+        end
+
+        local vector = (hitPart.Position - camera.CFrame.Position).Unit;
+        local angle = math.acos(camera.CFrame.LookVector:Dot(vector));
+        if angle < _angle then
+            _angle = angle;
+            _hitPart = hitPart;
+        end
+    end
+    return _hitPart;
+end
+
+local function findWeld(part, weldedPart)
+    for _, weld in ipairs(part:GetDescendants()) do
+        if weld:IsA("Weld") and weld.Part1 == weldedPart then
+            return weld;
+        end
+    end
+end
+
+-- connections
+game:GetService("RunService").Stepped:Connect(function()
+    local weapon = getWeapon();
+    local hitPart = weapon and getClosest();
+    if not hitPart then
+        return;
+    end
+
+    for _, name in ipairs({ "Flame", "SightMark" }) do
+        local part = weapon:FindFirstChild(name);
+        local weld = part and findWeld(weapon, part);
+        if weld then
+            local realCFrame = weld.Part0.CFrame + weld.C0.Position;
+            local relative = realCFrame:PointToObjectSpace(hitPart.Position);
+            weld.C0 = CFrame.new(Vector3.zero, relative) + weld.C0.Position;
+        end
+    end
+end);
